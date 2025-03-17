@@ -1,0 +1,49 @@
+services:
+  qdrant:
+    container_name: qdrant
+    hostname: qdrant
+    image: qdrant/qdrant:latest
+    ports:
+      - 6333:6333
+      - 6334:6334
+    volumes:
+      - /c/Users/wildi/Repositories-win/qdrant-docker/data:/qdrant/storage
+    environment:
+      - QDRANT__GRPC__ENABLED=true
+      - QDRANT__HTTP__ENABLED=true
+      - QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS=4
+      - QDRANT__STORAGE__PERFORMANCE__MAX_INDEXING_THREADS=4
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    restart: unless-stopped
+    networks:
+      - qdrant-network
+      - shared-network
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:6333/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+      - read-only:false
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+
+networks:
+  qdrant-network:
+    driver: bridge
+    name: qdrant-network
+  shared-network:
+    driver: bridge
+    name: shared-network
+    external: true

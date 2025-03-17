@@ -32,8 +32,7 @@ services:
       retries: 3
       start_period: 40s
     security_opt:
-      - no-new-privileges:true
-      - read-only:false
+      - no-new-privileges=true
     ulimits:
       nofile:
         soft: 65536
